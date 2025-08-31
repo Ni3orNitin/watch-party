@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live YouTube Watch Party</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Link to our custom CSS file -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase SDKs for authentication and Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
+
+    <!-- YouTube IFrame Player API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 flex flex-col min-h-screen">
+    <div class="container p-4 md:p-8 flex-grow">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-100">YouTube Watch Party</h1>
+            <p class="text-gray-400 mt-2">Watch and chat with friends in real-time. Session ID: <span id="session-id-display" class="font-mono text-pink-400"></span></p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Video and Controls -->
+            <div class="lg:col-span-2 bg-gray-800 p-6 rounded-2xl shadow-lg flex flex-col">
+                <div class="aspect-video bg-gray-700 rounded-xl overflow-hidden relative" id="player-container">
+                    <div id="youtube-player" class="w-full h-full"></div>
+                    
+                    <!-- Video Chat Feeds Overlay -->
+                    <div class="absolute bottom-4 right-4 z-10 space-y-2">
+                        <div class="relative rounded-xl overflow-hidden aspect-video w-36 h-24 shadow-lg">
+                            <video id="local-video" autoplay muted class="video-feed w-full h-full rounded-xl"></video>
+                            <span class="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">You</span>
+                        </div>
+                        <div class="relative rounded-xl overflow-hidden aspect-video w-36 h-24 shadow-lg">
+                            <video id="remote-video" autoplay class="video-feed w-full h-full rounded-xl"></video>
+                            <span class="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">Friend</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center mt-4 space-y-4 md:space-y-0 md:space-x-4">
+                    <input type="text" id="youtube-url-input" placeholder="Enter YouTube URL or ID" class="flex-grow w-full md:w-auto p-3 rounded-xl bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500 transition duration-200">
+                    <button id="load-video-btn" class="w-full md:w-auto px-6 py-3 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-xl transition duration-200 shadow-md">Load Video</button>
+                    <button id="play-pause-btn" class="w-full md:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition duration-200 shadow-md">Play/Pause</button>
+                </div>
+            </div>
+
+            <!-- Chat and User Feeds -->
+            <div class="flex flex-col space-y-8">
+                <!-- Chat Box -->
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-lg flex-grow flex flex-col h-96">
+                    <h2 class="text-xl font-semibold mb-4">Live Chat</h2>
+                    <div id="chat-messages" class="flex-grow overflow-y-auto space-y-4 pr-2 chat-box">
+                        <!-- Chat messages will be dynamically added here -->
+                    </div>
+                    <div class="mt-4 flex space-x-2">
+                        <input type="text" id="chat-input" placeholder="Type a message..." class="flex-grow p-3 rounded-xl bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <button id="send-chat-btn" class="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition duration-200">Send</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Link to our custom JavaScript file -->
+    <script src="script.js"></script>
+</body>
+</html>
