@@ -3,7 +3,6 @@ let app, db, auth;
 let userId;
 let sessionDocRef;
 let player;
-// Corrected initialization of RTCPeerConnection
 const peerConnection = new RTCPeerConnection({
     iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
@@ -39,24 +38,38 @@ async function initializeFirebase() {
         }
 
         userId = auth.currentUser?.uid || crypto.randomUUID();
-        document.getElementById('session-id-display').textContent = userId;
+        
         setupWebRTC();
         setupYouTubePlayer();
-        joinParty();
+
+        // Add event listeners for new buttons
+        document.getElementById('create-party-btn').addEventListener('click', () => {
+            const partyId = document.getElementById('party-id-input').value.trim() || crypto.randomUUID().substring(0, 8);
+            joinOrCreateParty(partyId, true);
+        });
+
+        document.getElementById('join-party-btn').addEventListener('click', () => {
+            const partyId = document.getElementById('party-id-input').value.trim();
+            if (partyId) {
+                joinOrCreateParty(partyId, false);
+            } else {
+                console.error('Please enter a Party ID to join.');
+            }
+        });
+
     } catch (error) {
         console.error("Firebase initialization or authentication failed:", error);
     }
 }
 
 // --- Watch Party Logic (Firestore) ---
-async function joinParty() {
-    const partyId = 'default-watch-party'; // Using a fixed ID for simplicity
+async function joinOrCreateParty(partyId, isCreating) {
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
     sessionDocRef = firebase.firestore.doc(db, `artifacts/${appId}/public/data/watch-parties/${partyId}`);
+    document.getElementById('current-party-id').textContent = `Session ID: ${partyId}`;
 
-    // Check if the document exists to determine if we are the host
     const docSnap = await firebase.firestore.getDoc(sessionDocRef);
-    if (!docSnap.exists()) {
+    if (isCreating && !docSnap.exists()) {
         isHost = true;
         console.log("Creating new watch party. You are the host.");
         await firebase.firestore.setDoc(sessionDocRef, {
@@ -65,9 +78,12 @@ async function joinParty() {
             lastUpdated: firebase.firestore.serverTimestamp(),
             lastUpdatedBy: userId,
         });
-    } else {
-        console.log("Joining existing watch party.");
+    } else if (docSnap.exists()) {
         isHost = false;
+        console.log("Joining existing watch party.");
+    } else {
+        console.error("Party does not exist. Please check the ID or create a new party.");
+        return;
     }
 
     // Real-time listener for video state changes
@@ -91,18 +107,6 @@ async function joinParty() {
                 }
             }
         }
-    });
-
-    // Listen for changes in the 'chat' sub-collection
-    const chatCollectionRef = firebase.firestore.collection(sessionDocRef, "chat");
-    const chatQuery = firebase.firestore.query(chatCollectionRef, firebase.firestore.orderBy("timestamp"));
-    firebase.firestore.onSnapshot(chatQuery, (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-            if (change.type === "added") {
-                const message = change.doc.data();
-                displayChatMessage(message.sender, message.text);
-            }
-        });
     });
 }
 
@@ -160,7 +164,7 @@ document.getElementById('load-video-btn').addEventListener('click', () => {
         updateVideoState({ videoId: videoId });
         player.loadVideoById(videoId);
     } else {
-        displayChatMessage('System', 'Invalid YouTube URL or ID.');
+        console.error('Invalid YouTube URL or ID.');
     }
 });
 
@@ -251,30 +255,6 @@ async function setupWebRTC() {
     } catch (error) {
         console.error("Error setting up WebRTC:", error);
     }
-}
-
-// --- Chat Logic ---
-document.getElementById('send-chat-btn').addEventListener('click', async () => {
-    const chatInput = document.getElementById('chat-input');
-    const messageText = chatInput.value.trim();
-    if (messageText && sessionDocRef) {
-        const chatCollectionRef = firebase.firestore.collection(sessionDocRef, "chat");
-        await firebase.firestore.addDoc(chatCollectionRef, {
-            sender: userId,
-            text: messageText,
-            timestamp: firebase.firestore.serverTimestamp(),
-        });
-        chatInput.value = '';
-    }
-});
-
-function displayChatMessage(sender, text) {
-    const chatMessages = document.getElementById('chat-messages');
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('p-3', 'rounded-xl', 'bg-gray-700');
-    messageElement.innerHTML = `<span class="font-bold ${sender === userId ? 'text-blue-400' : 'text-purple-400'}">${sender.substring(0, 8)}...:</span> ${text}`;
-    chatMessages.appendChild(messageElement);
-    chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll to bottom
 }
 
 // Initialize the app on page load

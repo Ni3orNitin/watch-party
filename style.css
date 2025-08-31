@@ -27,3 +27,17 @@ body {
     object-fit: cover;
     border: 2px solid #5a5a5a;
 }
+/* Custom CSS for the Watch Party app */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+.container {
+    max-width: 1200px;
+    margin: auto;
+}
+.video-feed {
+    object-fit: cover;
+    border: 2px solid #5a5a5a;
+}

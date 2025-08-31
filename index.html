@@ -23,7 +23,7 @@
     <div class="container p-4 md:p-8 flex-grow">
         <header class="text-center mb-8">
             <h1 class="text-4xl font-bold text-gray-100">YouTube Watch Party</h1>
-            <p class="text-gray-400 mt-2">Watch and chat with friends in real-time. Session ID: <span id="session-id-display" class="font-mono text-pink-400"></span></p>
+            <p class="text-gray-400 mt-2">Watch and video chat with friends in real-time.</p>
         </header>
 
         <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -31,18 +31,6 @@
             <div class="lg:col-span-2 bg-gray-800 p-6 rounded-2xl shadow-lg flex flex-col">
                 <div class="aspect-video bg-gray-700 rounded-xl overflow-hidden relative" id="player-container">
                     <div id="youtube-player" class="w-full h-full"></div>
-                    
-                    <!-- Video Chat Feeds Overlay -->
-                    <div class="absolute bottom-4 right-4 z-10 space-y-2">
-                        <div class="relative rounded-xl overflow-hidden aspect-video w-36 h-24 shadow-lg">
-                            <video id="local-video" autoplay muted class="video-feed w-full h-full rounded-xl"></video>
-                            <span class="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">You</span>
-                        </div>
-                        <div class="relative rounded-xl overflow-hidden aspect-video w-36 h-24 shadow-lg">
-                            <video id="remote-video" autoplay class="video-feed w-full h-full rounded-xl"></video>
-                            <span class="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">Friend</span>
-                        </div>
-                    </div>
                 </div>
                 
                 <div class="flex flex-col md:flex-row items-center mt-4 space-y-4 md:space-y-0 md:space-x-4">
@@ -52,17 +40,25 @@
                 </div>
             </div>
 
-            <!-- Chat and User Feeds -->
-            <div class="flex flex-col space-y-8">
-                <!-- Chat Box -->
-                <div class="bg-gray-800 p-6 rounded-2xl shadow-lg flex-grow flex flex-col h-96">
-                    <h2 class="text-xl font-semibold mb-4">Live Chat</h2>
-                    <div id="chat-messages" class="flex-grow overflow-y-auto space-y-4 pr-2 chat-box">
-                        <!-- Chat messages will be dynamically added here -->
+            <!-- Video Feeds -->
+            <div class="flex flex-col space-y-8 bg-gray-800 p-6 rounded-2xl shadow-lg">
+                <h2 class="text-xl font-semibold mb-4 text-center">Video Feeds</h2>
+                <div class="flex flex-col space-y-4">
+                    <div class="relative rounded-xl overflow-hidden aspect-video">
+                        <video id="local-video" autoplay muted class="video-feed w-full h-full rounded-xl"></video>
+                        <span class="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">You</span>
                     </div>
-                    <div class="mt-4 flex space-x-2">
-                        <input type="text" id="chat-input" placeholder="Type a message..." class="flex-grow p-3 rounded-xl bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500">
-                        <button id="send-chat-btn" class="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition duration-200">Send</button>
+                    <div class="relative rounded-xl overflow-hidden aspect-video">
+                        <video id="remote-video" autoplay class="video-feed w-full h-full rounded-xl"></video>
+                        <span class="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">Friend</span>
+                    </div>
+                </div>
+                <div class="mt-4 flex flex-col space-y-4">
+                    <p id="current-party-id" class="text-center font-mono text-xl text-pink-400"></p>
+                    <input type="text" id="party-id-input" placeholder="Enter Party ID" class="w-full p-3 rounded-xl bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200">
+                    <div class="grid grid-cols-2 gap-4">
+                        <button id="create-party-btn" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl transition duration-200 shadow-md">Create Party</button>
+                        <button id="join-party-btn" class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl transition duration-200 shadow-md">Join Party</button>
                     </div>
                 </div>
             </div>
